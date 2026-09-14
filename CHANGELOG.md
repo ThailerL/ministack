@@ -5,6 +5,11 @@ All notable changes to MiniStack will be documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 Versioning follows [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+- **Lambda — dispatch SQS event source batches concurrently** — one thread polled every mapping and waited for each invoke, so a handler that took 10 seconds held a message on an unrelated queue for about 8.6 seconds, and `ScalingConfig.MaximumConcurrency` was stored but ignored. SQS batches are now invoked off the poll thread, up to `MaximumConcurrency` batches per mapping (default 5), lowered to the function's `ReservedConcurrentExecutions` so a mapping does not throttle its own function. Kinesis and DynamoDB Streams mappings still process one batch at a time. Contributed by @ThailerL.
+
 ## [1.5.11] — 2026-09-13
 
 ### Added
